@@ -12,6 +12,22 @@ struct _MyApplication {
   char** dart_entrypoint_arguments;
 };
 
+// Implements platform channel msg call handler
+static void method_call_cb(FlMethodChannel* channel,
+                           FlMethodCall* method_call,
+                           gpointer user_data)
+{
+  g_autoptr(FlMethodResponse) response = nullptr;
+  
+  const gchar* method = fl_method_call_get_name(method_call);
+  if (strcmp(method, "shakeHand") == 0) {
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new("Hi from Linux!"));
+  } else {   
+    response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
+  }
+  fl_method_call_respond(method_call, response, nullptr);
+}
+
 G_DEFINE_TYPE(MyApplication, my_application, GTK_TYPE_APPLICATION)
 
 // Implements GApplication::activate.
@@ -58,6 +74,19 @@ static void my_application_activate(GApplication* application) {
   gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(view));
 
   fl_register_plugins(FL_PLUGIN_REGISTRY(view));
+
+  // TODO: [Linux][1] Get engine from view
+  FlEngine *engine = fl_view_get_engine(view);  
+  // TODO: [Linux][2] Get binary messenger
+  g_autoptr(FlBinaryMessenger) messenger = fl_engine_get_binary_messenger(engine);
+  // TODO: [Linux][3] Set channel
+  g_autoptr(FlMethodChannel) channel =
+      fl_method_channel_new(messenger,
+                            "cbl.tool.flutter_platform_channel",  // this is our channel name
+                            FL_METHOD_CODEC(fl_standard_method_codec_new()));
+
+  fl_method_channel_set_method_call_handler(channel, 
+                            method_call_cb, g_object_ref(view), g_object_unref);
 
   gtk_widget_grab_focus(GTK_WIDGET(view));
 }
