@@ -1,4 +1,9 @@
 #include "flutter_window.h"
+#include <flutter/event_channel.h>
+#include <flutter/event_sink.h>
+#include <flutter/event_stream_handler_functions.h>
+#include <flutter/method_channel.h>
+#include <flutter/standard_method_codec.h>
 
 #include <optional>
 
@@ -25,6 +30,22 @@ bool FlutterWindow::OnCreate() {
     return false;
   }
   RegisterPlugins(flutter_controller_->engine());
+
+  // TODO:[Windows] [1] use flutter_controller get engin and then messenger
+  flutter::MethodChannel<> channel(
+      flutter_controller_->engine()->messenger(), "cbl.tool.flutter_platform_channel",
+      &flutter::StandardMethodCodec::GetInstance());
+  channel.SetMethodCallHandler(
+      [](const flutter::MethodCall<>& call,
+          std::unique_ptr<flutter::MethodResult<>> result) {
+              if (call.method_name() == "shakeHand") {
+                  result->Success(flutter::EncodableValue("Hi from Windows!"));
+              }
+              else {
+                  result->NotImplemented();
+              }
+      });
+
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
   return true;
 }
