@@ -12,7 +12,7 @@ struct _MyApplication {
   char** dart_entrypoint_arguments;
 };
 
-// Implements platform channel msg call handler
+  // TODO: [Linux][4] add handling to each method name
 static void method_call_cb(FlMethodChannel* channel,
                            FlMethodCall* method_call,
                            gpointer user_data)
@@ -21,7 +21,7 @@ static void method_call_cb(FlMethodChannel* channel,
   
   const gchar* method = fl_method_call_get_name(method_call);
   if (strcmp(method, "shakeHand") == 0) {
-    response = FL_METHOD_RESPONSE(fl_method_success_response_new("Hi from Linux!"));
+    response = FL_METHOD_RESPONSE(fl_method_success_response_new(fl_value_new_string("Hi from Linux!")));
   } else {   
     response = FL_METHOD_RESPONSE(fl_method_not_implemented_response_new());
   }
@@ -84,7 +84,7 @@ static void my_application_activate(GApplication* application) {
       fl_method_channel_new(messenger,
                             "cbl.tool.flutter_platform_channel",  // this is our channel name
                             FL_METHOD_CODEC(fl_standard_method_codec_new()));
-
+  // TODO: [Linux][4] Set channel call handler
   fl_method_channel_set_method_call_handler(channel, 
                             method_call_cb, g_object_ref(view), g_object_unref);
 
