@@ -12,7 +12,7 @@ struct _MyApplication {
   char** dart_entrypoint_arguments;
 };
 
-  // TODO: [Linux][4] add handling to each method name
+  // TODO: [Linux][5] add handling to each method name
 static void method_call_cb(FlMethodChannel* channel,
                            FlMethodCall* method_call,
                            gpointer user_data)
