@@ -40,6 +40,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  /// TODO:[Flutter][1] Setup the MethodChannel
   final MethodChannel _platform =
       const MethodChannel('cbl.tool.flutter_platform_channel');
 
@@ -51,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ElevatedButton(
             child: Text('Say hi to ${Platform.operatingSystem}!'),
             onPressed: () async {
+              /// TODO:[Flutter][2] Submit call to the platform
               String msg = await _platform.invokeMethod('shakeHand');
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
